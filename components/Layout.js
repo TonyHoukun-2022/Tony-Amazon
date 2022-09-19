@@ -1,21 +1,88 @@
 import Head from 'next/head'
-import { AppBar, Toolbar, Typography, Container } from '@material-ui/core'
+import NextLink from 'next/link'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
+import { AppBar, Toolbar, Typography, Container, Link, Switch, Badge, Button, Menu, MenuItem, Box, IconButton, Drawer, List, ListItem, Divider, ListItemText, InputBase } from '@mui/material'
+import classes from '../utils/classes'
+import MenuIcon from '@mui/icons-material/Menu'
+import { useContext } from 'react'
+import { Store } from '../utils/store'
 
-export default function Layout({ children }) {
+export default function Layout({ children, title, description }) {
+  const { state, dispatch } = useContext(Store)
+  const { darkMode } = state
+  //mui theme
+  const theme = createTheme({
+    typography: {
+      h1: {
+        fontSize: '1.6rem',
+        fontWeight: 400,
+        margin: '1rem 0',
+      },
+      h2: {
+        fontSize: '1.4rem',
+        fontWeight: 400,
+        margin: '1rem 0',
+      },
+    },
+    //define colors
+    palette: {
+      //component background (for mui comp that not have specified bg style)
+      mode: darkMode ? 'dark' : 'light',
+      primary: {
+        main: '#f0c000',
+      },
+      secondary: {
+        main: '#208080',
+      },
+    },
+  })
+
+  const darkModeHandler = () => {
+    dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' })
+  }
+
   return (
-    <div>
+    <>
       <Head>
-        <title>Next Amazona</title>
+        <title>{title ? `${title} - Next Amazon` : `Next Amazon`}</title>
+        {description && <meta name='description' content={description}></meta>}
       </Head>
-      <AppBar position='static'>
-        <Toolbar>
-          <Typography>amazona</Typography>
-        </Toolbar>
-      </AppBar>
-      <Container>{children}</Container>
-      <footer>
-        <Typography>All rights reserved. Next Amazona.</Typography>
-      </footer>
-    </div>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AppBar position='static' sx={classes.appbar}>
+          <Toolbar sx={classes.toolbar}>
+            <Box display='flex' alignItems='center'>
+              <IconButton
+                edge='start'
+                aria-label='open drawer'
+                // onClick={sidebarOpenHandler}
+                sx={classes.menuButton}
+              >
+                <MenuIcon sx={classes.navbarButton} />
+              </IconButton>
+              <NextLink href='/' passHref>
+                <Link>
+                  <Typography sx={classes.brand}>amazona</Typography>
+                </Link>
+              </NextLink>
+            </Box>
+            <Box display='flex' alignItems='center'>
+              <Switch checked={darkMode} onChange={darkModeHandler} color='secondary'></Switch>
+              <NextLink href='/cart' passHref>
+                <Link>Cart</Link>
+              </NextLink>
+              <NextLink href='/login' passHref>
+                <Link>Login</Link>
+              </NextLink>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        <Container sx={classes.main}>{children}</Container>
+        <footer style={classes.footer}>
+          <Typography>All rights reserved. Next Amazona.</Typography>
+        </footer>
+      </ThemeProvider>
+    </>
   )
 }
