@@ -5,12 +5,15 @@ import { createTheme } from '@mui/material/styles'
 import { AppBar, Toolbar, Typography, Container, Link, Switch, Badge, Button, Menu, MenuItem, Box, IconButton, Drawer, List, ListItem, Divider, ListItemText, InputBase } from '@mui/material'
 import classes from '../utils/classes'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Store } from '../utils/store'
+import Cookies from 'js-cookie'
 
 export default function Layout({ children, title, description }) {
   const { state, dispatch } = useContext(Store)
   const { darkMode } = state
+  const [mode, setMode] = useState(false)
+  useEffect(() => setMode(darkMode), [darkMode])
   //mui theme
   const theme = createTheme({
     typography: {
@@ -28,7 +31,7 @@ export default function Layout({ children, title, description }) {
     //define colors
     palette: {
       //component background (for mui comp that not have specified bg style)
-      mode: darkMode ? 'dark' : 'light',
+      mode: mode ? 'dark' : 'light',
       primary: {
         main: '#f0c000',
       },
@@ -40,6 +43,9 @@ export default function Layout({ children, title, description }) {
 
   const darkModeHandler = () => {
     dispatch({ type: darkMode ? 'DARK_MODE_OFF' : 'DARK_MODE_ON' })
+    //store darkmode to cookie, then darkmode will not change after page refresh
+    const currentDarkMode = !darkMode //darkMode is from last state
+    Cookies.set('darkMode', currentDarkMode ? 'ON' : 'OFF')
   }
 
   return (
