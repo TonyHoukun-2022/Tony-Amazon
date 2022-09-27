@@ -11,7 +11,7 @@ import Cookies from 'js-cookie'
 
 export default function Layout({ children, title, description }) {
   const { state, dispatch } = useContext(Store)
-  const { darkMode } = state
+  const { darkMode, cart } = state
   const [mode, setMode] = useState(false)
   useEffect(() => setMode(darkMode), [darkMode])
   //mui theme
@@ -76,7 +76,15 @@ export default function Layout({ children, title, description }) {
             <Box display='flex' alignItems='center'>
               <Switch checked={darkMode} onChange={darkModeHandler} color='secondary'></Switch>
               <NextLink href='/cart' passHref>
-                <Link>Cart</Link>
+                <Link>
+                  {cart.cartItems.length > 0 ? (
+                    <Badge color='secondary' badgeContent={cart.cartItems.length}>
+                      Cart
+                    </Badge>
+                  ) : (
+                    'Cart'
+                  )}
+                </Link>
               </NextLink>
               <NextLink href='/login' passHref>
                 <Link>Login</Link>

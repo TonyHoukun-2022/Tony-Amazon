@@ -1,23 +1,42 @@
 // /product/slug
+import { useContext } from 'react'
 import NextLink from 'next/link'
 import Image from 'next/image'
-import styled from 'styled-components'
+import axios from 'axios'
 import { useRouter } from 'next/router'
+import { styled } from '@mui/material/styles'
 import { Grid, Link, List, ListItem, Typography, Card, Button, Box } from '@mui/material'
 
+import { Store } from '../../utils/store'
 import Layout from '../../components/Layout'
-import data from '../../utils/data'
 import classes from '../../utils/classes'
 
-const StyledTypography = styled(Typography)`
-  padding-left: 5px;
-  font-weight: bold;
-`
+const StyledTypography = styled(Typography)({
+  paddingLeft: '5px',
+  fontWeight: 'bold',
+})
 
-const Product = () => {
+const Product = ({ product }) => {
   const router = useRouter()
-  const { slug } = router.query
-  const product = data.products.find((product) => product.slug === slug)
+  const { state, dispatch } = useContext(Store)
+  const addToCartHandler = async () => {
+    const existItem = state.cart.cartItems.find((x) => x._id === product._id)
+    const qty = existItem ? existItem.quantity + 1 : 1
+    const { data: addedProduct } = await axios.get(`http://localhost:3000/api/product/${product._id}`)
+    if (addedProduct.countInStock < qty) {
+      window.alert('Sorry, this product is out of stock')
+      return
+    }
+    dispatch({
+      type: 'CART_ADD_ITEM',
+      payload: {
+        ...product,
+        quantity: qty,
+      },
+    })
+    //redirect to /cart after add item
+    router.push('/cart')
+  }
 
   //if doesnt have a product slug in data, display not found
   if (!product) {
@@ -87,12 +106,7 @@ const Product = () => {
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button
-                  fullWidth
-                  variant='contained'
-                  color='primary'
-                  // onClick={addToCartHandler}
-                >
+                <Button fullWidth variant='contained' color='primary' onClick={addToCartHandler}>
                   Add to cart
                 </Button>
               </ListItem>
@@ -105,3 +119,15 @@ const Product = () => {
 }
 
 export default Product
+
+export const getServerSideProps = async (context) => {
+  const {
+    params: { slug },
+  } = context
+  const { data } = await axios.get(`http://localhost:3000/api/products/${slug}`)
+  return {
+    props: {
+      product: data,
+    },
+  }
+}

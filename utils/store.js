@@ -5,6 +5,10 @@ export const Store = createContext()
 
 const initialState = {
   darkMode: Cookies.get('darkMode') === 'ON' ? true : false,
+  cart: {
+    //if has cookie, cartItems state will not lose after refresh
+    cartItems: Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')) : [],
+  },
 }
 
 function reducer(state, action) {
@@ -13,6 +17,33 @@ function reducer(state, action) {
       return { ...state, darkMode: true }
     case 'DARK_MODE_OFF':
       return { ...state, darkMode: false }
+    case 'CART_ADD_ITEM': {
+      const newItem = action.payload
+      //check if the payload is existed in cartItems
+      const existedItem = state.cart.cartItems.find((item) => item._id === newItem._id)
+      //if payload exists, replace the old one with payload, otherwise add in
+      const cartItems = existedItem ? state.cart.cartItems.map((item) => (item.name === existedItem.name ? newItem : item)) : [...state.cart.cartItems, newItem]
+      //stringfy cartitems array and set it as cookie
+      Cookies.set('cartItems', JSON.stringify(cartItems))
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems,
+        },
+      }
+    }
+    case 'CART_REMOVE_ITEM': {
+      const cartItems = state.cart.cartItems.filter((item) => item._id !== action.payload._id)
+      Cookies.set('cartItems', JSON.stringify(cartItems))
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems,
+        },
+      }
+    }
     default:
       return state
   }

@@ -1,16 +1,12 @@
 import mongoose from 'mongoose'
 
 const connectDB = async () => {
-  try {
-    mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log(' Mongoose is connected'))
-  } catch (e) {
-    console.log('could not connect')
-    // process.exit(1)
-  }
+  const conn = await mongoose.connect(process.env.MONGO_URI)
+  console.log('mongo is connected')
 }
 
 export const disconnectDB = async () => {
-  await mongoose.disconnect(() => console.log('mongoose is disconnected'))
+  mongoose.disconnect(() => console.log('mongoose is disconnected'))
 }
 
 export default connectDB
