@@ -8,6 +8,9 @@ import Layout from '../components/Layout'
 import { Store } from '../utils/store'
 import Cookies from 'js-cookie'
 
+import { Controller, useForm } from 'react-hook-form'
+import { useSnackbar } from 'notistack'
+
 const Form = styled('form')(() => ({
   width: '100%',
   maxWidth: 800,
@@ -15,6 +18,21 @@ const Form = styled('form')(() => ({
 }))
 
 const Register = () => {
+  //useForm from react-hook-form
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
   const router = useRouter()
   const redirect = router.query
   const { state, dispatch } = useContext(Store)
@@ -26,15 +44,16 @@ const Register = () => {
     }
   }, [])
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  //   const [name, setName] = useState('')
+  //   const [email, setEmail] = useState('')
+  //   const [password, setPassword] = useState('')
+  //   const [confirmPassword, setConfirmPassword] = useState('')
 
-  const submitHandler = async (e) => {
-    e.preventDefault()
+  const submitHandler = async ({ name, email, password, confirmPassword }) => {
+    // e.preventDefault()
+    closeSnackbar()
     if (password !== confirmPassword) {
-      alert(`passwords dont't match`)
+      enqueueSnackbar(`Password don't match`, { variant: 'error' })
       return
     }
     //passwords match
@@ -49,27 +68,107 @@ const Register = () => {
       //set cookie
       Cookies.set('userInfo', JSON.stringify(newUser))
     } catch (error) {
-      alert(error.response.data ? error.response.data.message : error.message)
+      enqueueSnackbar(error.response.data ? error.response.data.message : error.message, { variant: 'error' })
     }
   }
   return (
     <Layout title='Register'>
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(submitHandler)}>
         <Typography component='h1' variant='h1'>
           Register
         </Typography>
         <List>
           <ListItem>
-            <TextField variant='outlined' fullWidth id='name' label='Name' inputProps={{ type: 'text' }} onChange={(e) => setName(e.target.value)}></TextField>
+            <Controller
+              name='name'
+              control={control}
+              defaultValue=''
+              rules={{
+                required: true,
+                minLength: 2,
+              }}
+              render={({ field }) => (
+                <TextField
+                  variant='outlined'
+                  fullWidth
+                  id='name'
+                  label='Name'
+                  inputProps={{ type: 'text' }}
+                  error={errors.name}
+                  helperText={errors.name ? (errors.name.type === 'minLength' ? 'Name should be at least 2 letters long' : 'Name is required') : ''}
+                  {...field}
+                />
+              )}
+            />
           </ListItem>
           <ListItem>
-            <TextField variant='outlined' fullWidth id='email' label='Email' inputProps={{ type: 'email' }} onChange={(e) => setEmail(e.target.value)}></TextField>
+            <Controller
+              name='email'
+              control={control}
+              defaultValue=''
+              rules={{
+                required: true,
+                pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+              }}
+              render={({ field }) => (
+                <TextField
+                  variant='outlined'
+                  fullWidth
+                  id='email'
+                  label='Email'
+                  inputProps={{ type: 'email' }}
+                  error={errors.email}
+                  helperText={errors.email ? (errors.email.type === 'pattern' ? 'Email format is invalid' : 'Email is required') : ''}
+                  {...field}
+                />
+              )}
+            />
           </ListItem>
           <ListItem>
-            <TextField variant='outlined' fullWidth id='password' label='Password' inputProps={{ type: 'password' }} onChange={(e) => setPassword(e.target.value)}></TextField>
+            <Controller
+              name='password'
+              control={control}
+              defaultValue=''
+              rules={{
+                required: true,
+                minLength: 6,
+              }}
+              render={({ field }) => (
+                <TextField
+                  variant='outlined'
+                  fullWidth
+                  id='password'
+                  label='Password'
+                  inputProps={{ type: 'password' }}
+                  error={errors.password}
+                  helperText={errors.password ? (errors.password.type === 'minLength' ? 'Password should be at least 6 characters' : 'Password is required') : ''}
+                  {...field}
+                />
+              )}
+            />
           </ListItem>
           <ListItem>
-            <TextField variant='outlined' fullWidth id='confirmPassword' label='Confirm Password' inputProps={{ type: 'password' }} onChange={(e) => setConfirmPassword(e.target.value)}></TextField>
+            <Controller
+              name='confirmPassword'
+              control={control}
+              defaultValue=''
+              rules={{
+                required: true,
+                minLength: 6,
+              }}
+              render={({ field }) => (
+                <TextField
+                  variant='outlined'
+                  fullWidth
+                  id='confirmPassword'
+                  label='Confirm Password'
+                  inputProps={{ type: 'password' }}
+                  error={errors.confirmPassword}
+                  helperText={errors.confirmPassword ? (errors.confirmPassword.type === 'minLength' ? 'Confirm password should be at least 6 characters' : 'Confirm psd is required') : ''}
+                  {...field}
+                />
+              )}
+            />
           </ListItem>
           <ListItem>
             <Button variant='contained' type='submit' fullWidth color='primary'>

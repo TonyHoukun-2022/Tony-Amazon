@@ -1,11 +1,14 @@
 import { StoreProvider } from '../utils/store'
+import { SnackbarProvider } from 'notistack'
 import '../styles/global.css'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <StoreProvider>
-      <Component {...pageProps} />
-    </StoreProvider>
+    <SnackbarProvider maxStack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <StoreProvider>
+        <Component {...pageProps} />
+      </StoreProvider>
+    </SnackbarProvider>
   )
 }
 

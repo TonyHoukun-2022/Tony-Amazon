@@ -7,11 +7,12 @@ import { signToken } from '../../../utils/auth'
 const handler = nc<NextApiRequest, NextApiResponse>({attachParams: true});
 
 handler.post(async (req, res) => {
+    const { email, password } = req.body
     //use input email to find the user
-  const user = await User.findOne({email: req.body.email})
+  const user = await User.findOne({email})
 //   compareSync(plainPsd, hashedPsd)
 //input password is plaintext, psd stored in db is hash
-  if(user && bcrypt.compareSync(req.body.psd, user.password)) {
+  if(user && bcrypt.compareSync(password, user.password)) {
       //user existed, sign an token with jwt
       const token = signToken(user)
       return res.json({
@@ -22,7 +23,7 @@ handler.post(async (req, res) => {
           isAdmin: user.isAdmin,
       })
   } else {
-      return res.status(401).send({message: 'Invalid user or password'})
+      return res.status(401).send({message: 'Invalid email or password'})
   }
 })
 
