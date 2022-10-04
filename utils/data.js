@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 //dummy-data
 const data = {
   products: [
@@ -72,6 +73,20 @@ const data = {
       numReviews: 10,
       countInStock: 20,
       description: 'A popular pants',
+    },
+  ],
+  users: [
+    {
+      name: 'Tony',
+      email: 'tony@test.com',
+      password: bcrypt.hashSync('123456'),
+      isAdmin: true,
+    },
+    {
+      name: 'Kathy',
+      email: 'kathy@test.com',
+      password: bcrypt.hashSync('123456'),
+      isAdmin: false,
     },
   ],
 }
