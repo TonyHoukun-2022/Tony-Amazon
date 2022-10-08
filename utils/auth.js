@@ -17,4 +17,21 @@ const signToken = (user) => {
   )
 }
 
-export { signToken }
+const isAuth = async (req, res, next) => {
+  const { authorization } = req.headers
+  if (authorization && authorization.startsWith('Bearer')) {
+    //Bearer xxx => xxx
+    const token = authorization.slice(7, authorization.length)
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      req.body.token = decoded
+      next()
+    } catch (error) {
+      return res.status(401).json({ message: 'token is not valid' })
+    }
+  } else {
+    res.status(401).json({ message: 'Token is not supplied' })
+  }
+}
+
+export { signToken, isAuth }

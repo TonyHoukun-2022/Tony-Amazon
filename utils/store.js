@@ -8,6 +8,8 @@ const initialState = {
   cart: {
     //if has cookie, cartItems state will not lose after refresh
     cartItems: Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')) : [],
+    shippingInfo: Cookies.get('shippingInfo') ? JSON.parse(Cookies.get('shippingInfo')) : {},
+    paymentMethod: Cookies.get('paymentMethod') ? JSON.parse(Cookies.get('paymentMethod')) : '',
   },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
 }
@@ -45,6 +47,30 @@ function reducer(state, action) {
         },
       }
     }
+    case 'CART_CLEAR':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: [],
+        },
+      }
+    case 'SAVE_SHIPPING_INFO':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingInfo: action.payload,
+        },
+      }
+    case 'SAVE_PAYMENT_METHOD':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          paymentMethod: action.payload,
+        },
+      }
     case 'USER_LOGIN': {
       return {
         ...state,

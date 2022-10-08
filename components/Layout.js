@@ -46,6 +46,9 @@ export default function Layout({ children, title, description }) {
       secondary: {
         main: '#208080',
       },
+      third: {
+        main: 'rgba(0,0,0,0.38)',
+      },
     },
   })
 
