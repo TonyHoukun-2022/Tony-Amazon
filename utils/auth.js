@@ -12,7 +12,7 @@ const signToken = (user) => {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: '30d',
+      expiresIn: '10d',
     }
   )
 }
@@ -24,7 +24,7 @@ const isAuth = async (req, res, next) => {
     const token = authorization.slice(7, authorization.length)
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      req.body.token = decoded
+      req.user = decoded
       next()
     } catch (error) {
       return res.status(401).json({ message: 'token is not valid' })

@@ -49,6 +49,7 @@ const PlaceOrder = () => {
   }, [])
 
   const placeOrderHandler = async () => {
+    console.log(userInfo.token)
     closeSnackbar()
     try {
       setLoading(true)
@@ -72,7 +73,7 @@ const PlaceOrder = () => {
   }
 
   return (
-    <Layout title='Shopping Cart'>
+    <Layout title='Place order'>
       <CheckoutWizard activeStep={3} />
       <Typography component='h1' variant='h1'>
         Place Order

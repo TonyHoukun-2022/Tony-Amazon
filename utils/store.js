@@ -12,6 +12,11 @@ const initialState = {
     paymentMethod: Cookies.get('paymentMethod') ? JSON.parse(Cookies.get('paymentMethod')) : '',
   },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
+  order: {
+    loading: false,
+    orderInfo: {},
+    error: '',
+  },
 }
 
 function reducer(state, action) {
@@ -82,8 +87,37 @@ function reducer(state, action) {
         ...state,
         userInfo: null,
         cart: {
-          ...state.cart,
           cartItems: [],
+          shippingInfo: {},
+          paymentMethod: '',
+        },
+      }
+    case 'FETCH_ORDER':
+      return {
+        ...state,
+        order: {
+          ...state.order,
+          loading: true,
+        },
+      }
+    case 'FETCH_ORDER_SUCCESS':
+      return {
+        ...state,
+        order: {
+          ...state.order,
+          loading: false,
+          orderInfo: action.payload,
+          error: '',
+        },
+      }
+    case 'FETCH_ORDER_FAIL':
+      return {
+        ...state,
+        order: {
+          ...state.order,
+          loading: false,
+          orderInfo: {},
+          error: action.payload,
         },
       }
     default:

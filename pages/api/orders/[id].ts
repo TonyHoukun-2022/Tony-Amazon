@@ -5,16 +5,14 @@ import connectDB from '../../../utils/db'
 import { isAuth } from "../../../utils/auth.js"
 import { onError, getError } from "../../../utils/error"
 
-const handler = nc<NextApiRequest, NextApiResponse>({onError});
-//middleware => only authorized user can place an order
+const handler = nc<NextApiRequest, NextApiResponse>({onError, attachParams: true});
+//middleware => only authorized user can find order
 handler.use(isAuth)
 
-handler.post(async (req, res) => {
- const newOrder = await Order.create({
-    ...req.body,
-    user: req.user._id
- })
- res.status(201).json(newOrder)
+handler.get(async (req, res) => {
+ const { id } = req.query
+ const order = await Order.findById(id)
+ res.status(200).json(order)
 })
 
 export default handler

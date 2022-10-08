@@ -73,6 +73,8 @@ export default function Layout({ children, title, description }) {
     dispatch({ type: 'USER_LOGOUT' })
     Cookies.remove('userInfo')
     Cookies.remove('cartItems')
+    Cookies.remove('paymentMethod')
+    // Cookies.remove('shippingInfo')
     router.push('/')
   }
 
