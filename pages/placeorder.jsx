@@ -49,7 +49,6 @@ const PlaceOrder = () => {
   }, [])
 
   const placeOrderHandler = async () => {
-    console.log(userInfo.token)
     closeSnackbar()
     try {
       setLoading(true)

@@ -15,7 +15,6 @@ handler.post(async (req, res) => {
   if(user && bcrypt.compareSync(password, user.password)) {
       //user existed, sign an token with jwt
       const token = signToken(user)
-      console.log(token, 'signin token')
       return res.json({
           token,
           _id: user._id,

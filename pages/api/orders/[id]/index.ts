@@ -1,9 +1,8 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
-import Order from '../../../models/Order';
-import connectDB from '../../../utils/db'
-import { isAuth } from "../../../utils/auth.js"
-import { onError, getError } from "../../../utils/error"
+import Order from '../../../../models/Order';
+import { isAuth } from "../../../../utils/auth.js"
+import { onError} from "../../../../utils/error"
 
 const handler = nc<NextApiRequest, NextApiResponse>({onError, attachParams: true});
 //middleware => only authorized user can find order

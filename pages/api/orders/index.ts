@@ -1,11 +1,10 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 import Order from '../../../models/Order';
-import connectDB from '../../../utils/db'
 import { isAuth } from "../../../utils/auth.js"
 import { onError, getError } from "../../../utils/error"
 
-const handler = nc<NextApiRequest, NextApiResponse>({onError});
+const handler = nc({onError});
 //middleware => only authorized user can place an order
 handler.use(isAuth)
 
