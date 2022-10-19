@@ -10,6 +10,7 @@ import Cookies from 'js-cookie'
 
 import { Controller, useForm } from 'react-hook-form'
 import { useSnackbar } from 'notistack'
+import { getError } from '../utils/error'
 
 const Form = styled('form')(() => ({
   width: '100%',
@@ -68,7 +69,7 @@ const Register = () => {
       //set cookie
       Cookies.set('userInfo', JSON.stringify(newUser))
     } catch (error) {
-      enqueueSnackbar(error.response.data ? error.response.data.message : error.message, { variant: 'error' })
+      enqueueSnackbar(getError(error), { variant: 'error' })
     }
   }
   return (

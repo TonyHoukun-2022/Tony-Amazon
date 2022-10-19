@@ -11,6 +11,7 @@ import { Store } from '../utils/store'
 //use react-hook-form to validate inputs
 import { Controller, useForm } from 'react-hook-form'
 import { useSnackbar } from 'notistack'
+import { getError } from '../utils/error'
 
 const Form = styled('form')(() => ({
   width: '100%',
@@ -66,7 +67,7 @@ const Login = () => {
       router.push(redirect || '/')
     } catch (error) {
       //enqueueSnackbar(message, {opt})
-      enqueueSnackbar(error.response.data ? error.response.data.message : error.message, { variant: 'error' })
+      enqueueSnackbar(getError(error), { variant: 'error' })
     }
   }
   return (

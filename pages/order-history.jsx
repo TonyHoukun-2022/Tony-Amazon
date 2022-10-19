@@ -44,8 +44,6 @@ const OrderHistory = () => {
     error: '',
   })
 
-  //   console.log(error, 'error from reducer')
-
   useEffect(() => {
     if (!userInfo) {
       router.push('/login')

@@ -2,7 +2,7 @@ import nc from 'next-connect'
 import Order from '../../../models/Order'
 import { isAuth } from '../../../utils/auth.js'
 import { onError } from '../../../utils/error'
-lp1
+
 const handler = nc({ onError })
 //middleware => only authorized user can place an order
 //save decoded in req.user, decoded
