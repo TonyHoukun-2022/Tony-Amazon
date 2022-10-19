@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { getError } from '../../utils/error'
 
-import CheckoutWizard from '../../components/CheckoutWizard'
+// import CheckoutWizard from '../../components/CheckoutWizard'
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 
 const ErrorTypography = styled(Typography)({
@@ -152,7 +152,7 @@ const OrderDetail = ({ params }) => {
   }
   return (
     <Layout title={`Order ${orderId}`}>
-      <CheckoutWizard activeStep={3} />
+      {/* <CheckoutWizard activeStep={3} /> */}
       <Typography component='h1' variant='h1'>
         Order {orderId}
       </Typography>

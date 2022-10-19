@@ -65,8 +65,11 @@ export default function Layout({ children, title, description }) {
   const loginClickHandler = (e) => {
     setAnchorEl(e.currentTarget)
   }
-  const loginMenuCloseHandler = () => {
+  const loginMenuCloseHandler = (e, url) => {
     setAnchorEl(null)
+    if (url) {
+      router.push(url)
+    }
   }
   const logoutClickHandler = () => {
     setAnchorEl(null)
@@ -131,8 +134,9 @@ export default function Layout({ children, title, description }) {
                       'aria-labelledby': 'basic-button',
                     }}
                   >
-                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
+                    <MenuItem onClick={(e) => loginMenuCloseHandler(e, '/profile')}>Profile</MenuItem>
                     <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                    <MenuItem onClick={(e) => loginMenuCloseHandler(e, '/order-history')}>Order History</MenuItem>
                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                   </Menu>
                 </>
