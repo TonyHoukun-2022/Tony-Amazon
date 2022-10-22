@@ -23,6 +23,11 @@ const initialState = {
     paySuccess: false,
     payError: '',
   },
+  deliver: {
+    deliverLoading: false,
+    deliverSuccess: false,
+    deliverError: '',
+  },
 }
 
 function reducer(state, action) {
@@ -173,6 +178,46 @@ function reducer(state, action) {
         },
       }
     }
+    case 'DELIVER_REQUEST':
+      return {
+        ...state,
+        deliver: {
+          ...state.deliver,
+          deliverLoading: true,
+          deliverSuccess: false,
+          deliverError: '',
+        },
+      }
+    case 'DELIVER_SUCCESS':
+      return {
+        ...state,
+        deliver: {
+          ...state.deliver,
+          deliverLoading: false,
+          deliverSuccess: true,
+          deliverError: '',
+        },
+      }
+    case 'DELIVER_FAIL':
+      return {
+        ...state,
+        deliver: {
+          ...state.deliver,
+          deliverLoading: false,
+          deliverSuccess: false,
+          deliverError: action.payload,
+        },
+      }
+    case 'DELIVER_RESET':
+      return {
+        ...state,
+        deliver: {
+          ...state.deliver,
+          deliverLoading: true,
+          deliverSuccess: false,
+          deliverError: '',
+        },
+      }
     default:
       return state
   }

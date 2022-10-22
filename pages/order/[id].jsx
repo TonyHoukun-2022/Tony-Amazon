@@ -4,7 +4,7 @@ import Layout from '../../components/Layout'
 import { Store } from '../../utils/store'
 import NextLink from 'next/link'
 import Image from 'next/image'
-import { Grid, TableContainer, Table, Typography, TableHead, TableBody, TableRow, TableCell, Link, CircularProgress, Card, List, ListItem, Box } from '@mui/material'
+import { Grid, TableContainer, Table, Typography, TableHead, TableBody, TableRow, TableCell, Link, CircularProgress, Card, List, ListItem, Box, Button } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -37,6 +37,7 @@ const OrderDetail = ({ params }) => {
       userInfo,
       order: { orderInfo, loading, error },
       pay: { paySuccess },
+      deliver: { deliverLoading, deliverSuccess },
     },
     dispatch,
   } = useContext(Store)
@@ -75,13 +76,16 @@ const OrderDetail = ({ params }) => {
       }
     }
     //paySuccess = true => last payment success
-    if (!orderInfo._id || (orderInfo._id && orderInfo._id !== orderId) || paySuccess) {
+    if (!orderInfo._id || (orderInfo._id && orderInfo._id !== orderId) || paySuccess || deliverSuccess) {
       getOrder()
       //reset pay status when last payment is success, then effect code will run, step into loadPaypal script function
       if (paySuccess) {
         dispatch({
           type: 'PAY_RESET',
         })
+      }
+      if (deliverSuccess) {
+        dispatch({ type: 'DELIVER_SUCCESS' })
       }
     } else {
       //orderInfo._id && orderInfo._id === orderId => able to pay
@@ -108,8 +112,9 @@ const OrderDetail = ({ params }) => {
       }
       loadPaypalScript()
     }
-  }, [orderInfo, paySuccess])
+  }, [orderInfo, paySuccess, deliverSuccess])
 
+  //createOrder, onApprove, onError are handlers for paypal-js
   const createOrderHandler = (data, actions) => {
     return actions.order
       .create({
@@ -149,6 +154,26 @@ const OrderDetail = ({ params }) => {
 
   const onErrorHandler = (error) => {
     enqueueSnackbar(getError(error), { variant: 'error' })
+  }
+
+  const deliverHandler = async () => {
+    try {
+      dispatch({ type: 'DELIVER_REQUEST' })
+      const { data: deliveredOrder } = await axios.put(
+        `/api/orders/${orderInfo._id}/deliver`,
+        {},
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      )
+      dispatch({ type: 'DELIVER_SUCCESS' })
+      enqueueSnackbar(deliveredOrder.message, { variant: 'success' })
+    } catch (error) {
+      dispatch({ type: 'DELIVER_FAIL', payload: getError(error) })
+      enqueueSnackbar(getError(error), { variant: 'error' })
+    }
   }
   return (
     <Layout title={`Order ${orderId}`}>
@@ -299,6 +324,14 @@ const OrderDetail = ({ params }) => {
                         <PayPalButtons createOrder={createOrderHandler} onApprove={onApproveHandler} onError={onErrorHandler} />
                       </Box>
                     )}
+                  </ListItem>
+                )}
+                {userInfo.isAdmin && isPaid && !isDelivered && (
+                  <ListItem>
+                    {deliverLoading && <CircularProgress />}
+                    <Button fullWidth variant='contained' color='primary' onClick={deliverHandler}>
+                      Deliver Order
+                    </Button>
                   </ListItem>
                 )}
               </List>
