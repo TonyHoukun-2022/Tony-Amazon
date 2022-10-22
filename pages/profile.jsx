@@ -72,7 +72,7 @@ const Profile = () => {
         type: 'USER_LOGIN',
         payload: updatedUser,
       })
-      Cookies.set('userInfo', updatedUser)
+      Cookies.set('userInfo', JSON.stringify(updatedUser))
       enqueueSnackbar('Profile updated successfully', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(getError(error), { variant: 'error' })
