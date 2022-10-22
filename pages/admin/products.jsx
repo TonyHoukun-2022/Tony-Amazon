@@ -14,7 +14,7 @@ function reducer(state, action) {
     case 'FETCH_REQUEST':
       return { ...state, loading: true, error: '' }
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, orders: action.payload, error: '' }
+      return { ...state, loading: false, products: action.payload, error: '' }
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload }
     default:
@@ -30,15 +30,15 @@ const SectionCard = styled(Card)({
   },
 })
 
-const Orders = () => {
+const AdminProducts = () => {
   const {
     state: { userInfo },
   } = useContext(Store)
   const router = useRouter()
 
-  const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, products }, dispatch] = useReducer(reducer, {
     loading: true,
-    orders: [],
+    products: [],
     error: '',
   })
 
@@ -49,49 +49,47 @@ const Orders = () => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' })
-        const { data } = await axios.get(`/api/admin/orders`, {
-          headers: {
-            authorization: `Bearer ${userInfo.token}`,
-          },
+        const { data } = await axios.get(`/api/admin/products`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
         })
         dispatch({ type: 'FETCH_SUCCESS', payload: data })
-      } catch (error) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(error) })
+      } catch (err) {
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) })
       }
     }
     fetchData()
   }, [])
 
   return (
-    <Layout title='Orders'>
+    <Layout title='Products'>
       <Grid container spacing={1}>
         <Grid item md={3} xs={12}>
           <SectionCard>
             <List>
               <NextLink href='/admin/dashboard' passHref>
-                <ListItemButton component='a'>
-                  <ListItemText primary='Admin Dashboard'></ListItemText>
+                <ListItemButton button='true' component='a'>
+                  <ListItemText primary='Admin Dashboard' />
                 </ListItemButton>
               </NextLink>
               <NextLink href='/admin/orders' passHref>
-                <ListItemButton selected component='a'>
-                  <ListItemText primary='Orders'></ListItemText>
+                <ListItemButton button='true' component='a'>
+                  <ListItemText primary='Orders' />
                 </ListItemButton>
               </NextLink>
               <NextLink href='/admin/products' passHref>
-                <ListItemButton selected component='a'>
-                  <ListItemText primary='Products'></ListItemText>
+                <ListItemButton selected button='true' component='a'>
+                  <ListItemText primary='Products' />
                 </ListItemButton>
               </NextLink>
             </List>
           </SectionCard>
         </Grid>
         <Grid item md={9} xs={12}>
-          <Card>
+          <SectionCard>
             <List>
               <ListItem>
                 <Typography component='h1' variant='h1'>
-                  Orders
+                  Products
                 </Typography>
               </ListItem>
 
@@ -99,34 +97,39 @@ const Orders = () => {
                 {loading ? (
                   <CircularProgress />
                 ) : error ? (
-                  <Typography sx={{ color: '#f04040' }}>{error}</Typography>
+                  <Typography sx={{ color: 'red' }}>{error}</Typography>
                 ) : (
                   <TableContainer>
                     <Table>
                       <TableHead>
                         <TableRow>
                           <TableCell>ID</TableCell>
-                          <TableCell>USER</TableCell>
-                          <TableCell>DATE</TableCell>
-                          <TableCell>TOTAL</TableCell>
-                          <TableCell>PAID</TableCell>
-                          <TableCell>DELIVERED</TableCell>
-                          <TableCell>ACTION</TableCell>
+                          <TableCell>NAME</TableCell>
+                          <TableCell>PRICE</TableCell>
+                          <TableCell>CATEGORY</TableCell>
+                          <TableCell>COUNT</TableCell>
+                          <TableCell>RATING</TableCell>
+                          <TableCell>ACTIONS</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {orders.map((order) => (
-                          <TableRow key={order._id}>
-                            <TableCell>{order._id.substring(20, 24)}</TableCell>
-                            <TableCell>{order.user ? order.user.name : 'DELETED USER'}</TableCell>
-                            <TableCell>{order.createdAt}</TableCell>
-                            <TableCell>${order.totalPrice}</TableCell>
-                            <TableCell>{order.isPaid ? `paid at ${order.paidAt}` : 'not paid'}</TableCell>
-                            <TableCell>{order.isDelivered ? `delivered at ${order.deliveredAt}` : 'not delivered'}</TableCell>
+                        {products.map((product) => (
+                          <TableRow key={product._id}>
+                            <TableCell>{product._id.substring(20, 24)}</TableCell>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>${product.price}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell>{product.countInStock}</TableCell>
+                            <TableCell>{product.rating}</TableCell>
                             <TableCell>
-                              <NextLink href={`/order/${order._id}`} passHref>
-                                <Button variant='contained'>Details</Button>
-                              </NextLink>
+                              <NextLink href={`/admin/product/${product._id}`} passHref>
+                                <Button size='small' variant='contained'>
+                                  Edit
+                                </Button>
+                              </NextLink>{' '}
+                              <Button size='small' variant='contained'>
+                                Delete
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -136,11 +139,11 @@ const Orders = () => {
                 )}
               </ListItem>
             </List>
-          </Card>
+          </SectionCard>
         </Grid>
       </Grid>
     </Layout>
   )
 }
 
-export default Orders
+export default dynamic(() => Promise.resolve(AdminProducts), { ssr: false })

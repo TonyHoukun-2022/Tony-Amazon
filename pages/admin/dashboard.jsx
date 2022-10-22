@@ -84,6 +84,11 @@ const AdminDashBoard = () => {
                   <ListItemText primary='Orders' />
                 </ListItemButton>
               </NextLink>
+              <NextLink href='/admin/products' passHref>
+                <ListItemButton component='a'>
+                  <ListItemText primary='Products' />
+                </ListItemButton>
+              </NextLink>
             </List>
           </SectionCard>
         </Grid>
