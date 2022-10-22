@@ -60,6 +60,13 @@ const Login = () => {
         type: 'USER_LOGIN',
         payload: loggedInUser,
       })
+      /** userInfo
+       * token,
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+       */
       //set loggedInUser to cookie
       Cookies.set('userInfo', JSON.stringify(loggedInUser))
       //if redirect is null, go to home

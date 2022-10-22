@@ -1,22 +1,13 @@
-import { useEffect, useContext, useReducer } from 'react'
 import axios from 'axios'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
-import { CircularProgress, Grid, List, ListItem, TableContainer, Typography, Card, Table, TableHead, TableRow, TableCell, TableBody, Button, ListItemText, ListItemButton } from '@mui/material'
+import React, { useEffect, useContext, useReducer } from 'react'
+import { CircularProgress, Grid, List, ListItem, Typography, Card, Button, ListItemText, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, ListItemButton } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { getError } from '../utils/error'
-import { Store } from '../utils/store'
-
-import Layout from '../components/Layout'
-
-const SectionCard = styled(Card)({
-  marginTop: 1,
-  marginBottom: 1,
-  '& a': {
-    textDecoration: 'none',
-  },
-})
+import { getError } from '../../utils/error'
+import { Store } from '../../utils/store'
+import Layout from '../../components/Layout'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -31,13 +22,20 @@ function reducer(state, action) {
   }
 }
 
-const OrderHistory = () => {
+const SectionCard = styled(Card)({
+  marginTop: 1,
+  marginBottom: 1,
+  '& a': {
+    textDecoration: 'none',
+  },
+})
+
+const Orders = () => {
   const {
     state: { userInfo },
   } = useContext(Store)
   const router = useRouter()
 
-  //local reducer
   const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
     loading: true,
     orders: [],
@@ -48,49 +46,50 @@ const OrderHistory = () => {
     if (!userInfo) {
       router.push('/login')
     }
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' })
-        const {
-          data: { message, orders },
-        } = await axios.get(`/api/orders/history`, {
-          headers: { authorization: `Bearer ${userInfo.token}` },
+        const { data } = await axios.get(`/api/admin/orders`, {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
         })
-        dispatch({ type: 'FETCH_SUCCESS', payload: orders })
-      } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) })
+        dispatch({ type: 'FETCH_SUCCESS', payload: data })
+      } catch (error) {
+        dispatch({ type: 'FETCH_FAIL', payload: getError(error) })
       }
     }
-    fetchOrders()
+    fetchData()
   }, [])
 
   return (
-    <Layout title='Order History'>
+    <Layout title='Orders'>
       <Grid container spacing={1}>
         <Grid item md={3} xs={12}>
           <SectionCard>
             <List>
-              <NextLink href='/profile' passHref>
+              <NextLink href='/admin/dashboard' passHref>
                 <ListItemButton component='a'>
-                  <ListItemText primary='User Profile' />
+                  <ListItemText primary='Admin Dashboard'></ListItemText>
                 </ListItemButton>
               </NextLink>
-              <NextLink href='/order-history' passHref>
+              <NextLink href='/admin/orders' passHref>
                 <ListItemButton selected component='a'>
-                  <ListItemText primary='Order History' />
+                  <ListItemText primary='Orders'></ListItemText>
                 </ListItemButton>
               </NextLink>
             </List>
           </SectionCard>
         </Grid>
         <Grid item md={9} xs={12}>
-          <SectionCard>
+          <Card>
             <List>
               <ListItem>
                 <Typography component='h1' variant='h1'>
-                  Order History
+                  Orders
                 </Typography>
               </ListItem>
+
               <ListItem>
                 {loading ? (
                   <CircularProgress />
@@ -102,6 +101,7 @@ const OrderHistory = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell>ID</TableCell>
+                          <TableCell>USER</TableCell>
                           <TableCell>DATE</TableCell>
                           <TableCell>TOTAL</TableCell>
                           <TableCell>PAID</TableCell>
@@ -113,6 +113,7 @@ const OrderHistory = () => {
                         {orders.map((order) => (
                           <TableRow key={order._id}>
                             <TableCell>{order._id.substring(20, 24)}</TableCell>
+                            <TableCell>{order.user ? order.user.name : 'DELETED USER'}</TableCell>
                             <TableCell>{order.createdAt}</TableCell>
                             <TableCell>${order.totalPrice}</TableCell>
                             <TableCell>{order.isPaid ? `paid at ${order.paidAt}` : 'not paid'}</TableCell>
@@ -130,11 +131,11 @@ const OrderHistory = () => {
                 )}
               </ListItem>
             </List>
-          </SectionCard>
+          </Card>
         </Grid>
       </Grid>
     </Layout>
   )
 }
 
-export default dynamic(() => Promise.resolve(OrderHistory), { ssr: false })
+export default Orders

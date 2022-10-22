@@ -2,7 +2,7 @@ import axios from 'axios'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles'
-import NexLink from 'next/link'
+import NextLink from 'next/link'
 import React, { useEffect, useContext } from 'react'
 import { Grid, List, ListItem, ListItemButton, Typography, Card, Button, ListItemText, TextField } from '@mui/material'
 import { getError } from '../utils/error'
@@ -85,16 +85,16 @@ const Profile = () => {
         <Grid item md={3} xs={12}>
           <SectionCard>
             <List>
-              <NexLink href='/profile' passHref>
+              <NextLink href='/profile' passHref>
                 <ListItemButton selected component='a'>
                   <ListItemText primary='User Profile' />
                 </ListItemButton>
-              </NexLink>
-              <NexLink href='/order-history' passHref>
+              </NextLink>
+              <NextLink href='/order-history' passHref>
                 <ListItemButton component='a'>
                   <ListItemText primary='Order History' />
                 </ListItemButton>
-              </NexLink>
+              </NextLink>
             </List>
           </SectionCard>
         </Grid>

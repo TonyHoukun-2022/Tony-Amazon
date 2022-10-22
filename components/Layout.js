@@ -102,7 +102,7 @@ export default function Layout({ children, title, description }) {
               </IconButton>
               <NextLink href='/' passHref>
                 <Link>
-                  <Typography sx={classes.brand}>amazona</Typography>
+                  <Typography sx={classes.brand}>Amazon</Typography>
                 </Link>
               </NextLink>
             </Box>
