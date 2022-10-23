@@ -36,3 +36,4 @@ yarn-error.log*
 # othrs
 .env
 yarn.lock
+next-env.d.ts
