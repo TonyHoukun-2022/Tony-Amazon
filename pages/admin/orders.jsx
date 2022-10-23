@@ -79,12 +79,12 @@ const Orders = () => {
                 </ListItemButton>
               </NextLink>
               <NextLink href='/admin/products' passHref>
-                <ListItemButton selected component='a'>
+                <ListItemButton component='a'>
                   <ListItemText primary='Products'></ListItemText>
                 </ListItemButton>
               </NextLink>
               <NextLink href='/admin/users' passHref>
-                <ListItemButton selected component='a'>
+                <ListItemButton component='a'>
                   <ListItemText primary='Users'></ListItemText>
                 </ListItemButton>
               </NextLink>

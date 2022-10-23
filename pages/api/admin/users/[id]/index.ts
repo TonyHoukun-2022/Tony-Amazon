@@ -15,23 +15,16 @@ handler.get(async(req, res) => {
 })
 
 
-// handler.put(async (req, res) => {
-//     const user = await User.findById(req.query.id);
-//     if(!user) {
-//         res.status(404).send({ message: 'User Not Found' });
-//     }
-//     user.name = req.body.name;
-//     user.slug = req.body.slug;
-//     user.price = req.body.price;
-//     user.category = req.body.category;
-//     user.image = req.body.image;
-//     user.brand = req.body.brand;
-//     user.countInStock = req.body.countInStock;
-//     user.description = req.body.description;
-//     await user.save();
-//     res.send({ message: 'User Updated Successfully' });
-  
-//   });
+handler.put(async (req, res) => {
+    const user = await User.findById(req.query.id);
+    if(!user) {
+        res.status(404).send({ message: 'User Not Found' });
+    }
+    user.name = req.body.name;
+    user.isAdmin = Boolean(req.body.isAdmin)
+    await user.save();
+    res.json({ message: 'User Updated Successfully' });
+  });
 
 handler.delete(async (req, res) => {
     const user = await User.findById(req.query.id);

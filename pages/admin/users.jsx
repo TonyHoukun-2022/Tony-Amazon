@@ -138,7 +138,7 @@ const AdminUsers = () => {
                 {loading ? (
                   <CircularProgress />
                 ) : error ? (
-                  <Typography className={classes.error}>{error}</Typography>
+                  <Typography sx={{ color: 'red' }}>{error}</Typography>
                 ) : (
                   <TableContainer>
                     <Table>
