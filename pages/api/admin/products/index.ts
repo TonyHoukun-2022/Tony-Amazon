@@ -1,8 +1,8 @@
 import nc from 'next-connect';
-import Product from '../../../models/Product';
+import Product from '../../../../models/Product';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { isAuth, isAdmin } from '../../../utils/auth';
-import { onError } from '../../../utils/error';
+import { isAuth, isAdmin } from '../../../../utils/auth';
+import { onError } from '../../../../utils/error';
 
 const handler = nc<NextApiRequest, NextApiResponse>({
   onError,
