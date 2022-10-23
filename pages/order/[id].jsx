@@ -29,7 +29,7 @@ const SectionCard = styled(Card)({
 const OrderDetail = ({ params }) => {
   const orderId = params.id
   const router = useRouter()
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar()
   const [readyRender, setReadyRender] = useState(false)
 
   const {
