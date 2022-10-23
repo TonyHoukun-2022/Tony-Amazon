@@ -187,6 +187,11 @@ const EditProduct = ({ params }) => {
                   <ListItemText primary='Products'></ListItemText>
                 </ListItemButton>
               </NextLink>
+              <NextLink href='/admin/users' passHref>
+                <ListItemButton selected component='a'>
+                  <ListItemText primary='Users'></ListItemText>
+                </ListItemButton>
+              </NextLink>
             </List>
           </SectionCard>
         </Grid>
