@@ -42,7 +42,11 @@ const EditProduct = ({ params }) => {
   const productId = params.id
 
   const {
-    state: { userInfo },
+    state: {
+      userInfo,
+      productUpdate: { updateLoading, updateError },
+    },
+    dispatch: storeDispatch,
   } = useContext(Store)
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -94,14 +98,22 @@ const EditProduct = ({ params }) => {
     fetchData()
   }, [])
 
-  const submitHandler = async ({ name }) => {
+  const submitHandler = async ({ name, slug, price, image, category, brand, countInStock, description }) => {
     closeSnackbar()
     //update product detail
     try {
+      storeDispatch({ type: 'PRODUCT_UPDATE_REQUEST' })
       const { data } = await axios.put(
         `/api/admin/products/${productId}`,
         {
           name,
+          slug,
+          price,
+          image,
+          category,
+          brand,
+          countInStock,
+          description,
         },
         {
           headers: {
@@ -109,8 +121,14 @@ const EditProduct = ({ params }) => {
           },
         }
       )
-      enqueueSnackbar('Product updated successfully', { variant: 'sucess' })
+      storeDispatch({ type: 'PRODUCT_UPDATE_SUCCESS' })
+      enqueueSnackbar(data.message, { variant: 'success' })
+      router.push('/admin/products')
     } catch (error) {
+      storeDispatch({
+        type: 'PRODUCT_UPDATE_FAIL',
+        payload: getError(error),
+      })
       enqueueSnackbar(getError(error), { variant: 'error' })
     }
   }
@@ -285,10 +303,12 @@ const EditProduct = ({ params }) => {
                       ></Controller>
                     </ListItem>
 
-                    <ListItem>
+                    <ListItem sx={{ flexDirection: 'column' }}>
                       <Button variant='contained' type='submit' fullWidth color='primary'>
                         Update
                       </Button>
+                      {updateLoading && <CircularProgress />}
+                      {updateError && <div style={{ paddingTop: '1rem' }}>{updateError}</div>}
                     </ListItem>
                   </List>
                 </Form>

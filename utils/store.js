@@ -28,6 +28,11 @@ const initialState = {
     deliverSuccess: false,
     deliverError: '',
   },
+  productUpdate: {
+    updateLoading: true,
+    updateSuccess: false,
+    updateError: '',
+  },
 }
 
 function reducer(state, action) {
@@ -216,6 +221,36 @@ function reducer(state, action) {
           deliverLoading: true,
           deliverSuccess: false,
           deliverError: '',
+        },
+      }
+    case 'PRODUCT_UPDATE_REQUEST':
+      return {
+        ...state,
+        productUpdate: {
+          ...state.productUpdate,
+          updateLoading: true,
+          updateSuccess: false,
+          updateError: '',
+        },
+      }
+    case 'PRODUCT_UPDATE_SUCCESS':
+      return {
+        ...state,
+        productUpdate: {
+          ...state.productUpdate,
+          updateLoading: false,
+          updateSuccess: true,
+          updateError: '',
+        },
+      }
+    case 'PRODUCT_UPDATE_FAIL':
+      return {
+        ...state,
+        productUpdate: {
+          ...state.productUpdate,
+          updateLoading: false,
+          updateSuccess: false,
+          updateError: action.payload,
         },
       }
     default:
