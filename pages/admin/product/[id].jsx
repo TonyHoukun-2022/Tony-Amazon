@@ -19,6 +19,12 @@ function reducer(state, action) {
       return { ...state, loading: false, error: '' }
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload }
+    case 'IMAGE_UPLOAD_REQUEST':
+      return { ...state, imageUploadLoading: true, imageUploadError: '' }
+    case 'IMAGE_UPLOAD_SUCCESS':
+      return { ...state, imageUploadLoading: false, imageUploadError: '' }
+    case 'IMAGE_UPLOAD_FAIL':
+      return { ...state, imageUploadLoading: false, imageUploadError: action.payload }
     default:
       return state
   }
@@ -53,9 +59,11 @@ const EditProduct = ({ params }) => {
 
   const router = useRouter()
 
-  const [{ loading, error }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, imageUploadLoading, imageUploadError }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
+    imageUploadLoading: false,
+    imageUploadError: '',
   })
 
   const {
@@ -129,6 +137,31 @@ const EditProduct = ({ params }) => {
         type: 'PRODUCT_UPDATE_FAIL',
         payload: getError(error),
       })
+      enqueueSnackbar(getError(error), { variant: 'error' })
+    }
+  }
+
+  const uploadHandler = async (e) => {
+    const file = e.target.files[0]
+    //create formData obj
+    const bodyFormData = new FormData()
+    //add key/value pair to formData
+    bodyFormData.append('file', file)
+    try {
+      dispatch({ type: 'IMAGE_UPLOAD_REQUEST' })
+      const { data } = await axios.post('/api/admin/upload', bodyFormData, {
+        headers: {
+          //multipart/form-data for sending html form with photo
+          'Content-Type': 'multipart/form-data',
+          authorization: `Bearer ${userInfo.token}`,
+        },
+      })
+      console.log(data)
+      dispatch({ type: 'IMAGE_UPLOAD_SUCCESS' })
+      setValue('image', data.secure_url)
+      enqueueSnackbar('File uploaded successfully', { variant: 'success' })
+    } catch (error) {
+      dispatch({ type: 'IMAGE_UPLOAD_FAIL', payload: getError(error) })
       enqueueSnackbar(getError(error), { variant: 'error' })
     }
   }
@@ -224,6 +257,14 @@ const EditProduct = ({ params }) => {
                           <TextField variant='outlined' fullWidth id='image' label='Image' error={Boolean(errors.image)} helperText={errors.image ? 'Image is required' : ''} {...field} />
                         )}
                       />
+                    </ListItem>
+                    <ListItem sx={{ flexDirection: 'column' }}>
+                      <Button variant='contained' component='label'>
+                        Upload Image
+                        <input type='file' onChange={uploadHandler} hidden />
+                      </Button>
+                      {imageUploadLoading && <CircularProgress />}
+                      {imageUploadError && <div>{imageUploadError}</div>}
                     </ListItem>
                     <ListItem>
                       <Controller

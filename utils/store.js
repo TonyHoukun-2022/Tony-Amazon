@@ -29,7 +29,7 @@ const initialState = {
     deliverError: '',
   },
   productUpdate: {
-    updateLoading: true,
+    updateLoading: false,
     updateSuccess: false,
     updateError: '',
   },
