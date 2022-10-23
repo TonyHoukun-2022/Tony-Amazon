@@ -15,4 +15,22 @@ handler.get(async (req, res) => {
   res.status(200).json(products);
 });
 
+//create product with sample data
+handler.post(async(req, res)=>{
+  const newProduct = await Product.create({
+    name: 'sample product',
+    slug: 'sample-product-' + Math.random(),
+    image: '/images/shirt1.jpg',
+    price: 0,
+    category: 'sample category',
+    brand: 'sample brand',
+    countInStock: 0,
+    description: 'sample description',
+    rating: 0,
+    numReviews: 0,
+  })
+
+  res.status(201).json({message: 'Product created', product: newProduct})
+})
+
 export default handler;

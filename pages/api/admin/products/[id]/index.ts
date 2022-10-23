@@ -33,4 +33,13 @@ handler.put(async(req, res) => {
   await product.save()
   res.status(203).json({message: 'Product updated successfully', product})
 })
+
+handler.delete(async(req, res)=>{
+  const product = await Product.findById(req.query.id)
+  if(!product) {
+    return res.status(404).json({message: 'Product not found'})
+  }
+  await product.remove()
+  res.status(203).json({message: 'Product deleted'})
+})
 export default handler;
