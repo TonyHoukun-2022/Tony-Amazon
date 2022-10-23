@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
