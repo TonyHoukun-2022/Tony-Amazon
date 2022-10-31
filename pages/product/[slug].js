@@ -1,15 +1,18 @@
 // /product/slug
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
 import Image from 'next/image'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 import { styled } from '@mui/material/styles'
-import { Grid, Link, List, ListItem, Typography, Card, Button, Box } from '@mui/material'
+import { Grid, Link, List, ListItem, Typography, Card, Button, Box, Rating } from '@mui/material'
 
 import { Store } from '../../utils/store'
 import Layout from '../../components/Layout'
 import classes from '../../utils/classes'
+import { getError } from '../../utils/error'
+import ReviewSection from '../../components/ReviewSection'
 
 const StyledTypography = styled(Typography)({
   paddingLeft: '5px',
@@ -19,6 +22,52 @@ const StyledTypography = styled(Typography)({
 const Product = ({ product }) => {
   const router = useRouter()
   const { state, dispatch } = useContext(Store)
+  const { userInfo } = state
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [reviews, setReviews] = useState([])
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const fetchReviews = async () => {
+    try {
+      const { data: reviewsOfProduct } = await axios.get(`/api/product/${product._id}/review`)
+      setReviews(reviewsOfProduct)
+    } catch (err) {
+      enqueueSnackbar(getError(err), { variant: 'error' })
+    }
+  }
+
+  useEffect(() => {
+    fetchReviews()
+  }, [rating, comment])
+
+  //submit to update or create review
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await axios.post(
+        `/api/product/${product._id}/review`,
+        {
+          rating,
+          comment,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      )
+      setLoading(false)
+      enqueueSnackbar('Review submitted successfully', { variant: 'success' })
+      //fetch reviews after update or create a new
+      fetchReviews()
+    } catch (err) {
+      setLoading(false)
+      enqueueSnackbar(getError(err), { variant: 'error' })
+    }
+  }
+
   const addToCartHandler = async () => {
     const existItem = state.cart.cartItems.find((x) => x._id === product._id)
     const qty = existItem ? existItem.quantity + 1 : 1
@@ -56,7 +105,7 @@ const Product = ({ product }) => {
         <Grid item xs={12} md={6}>
           <Image src={product.image} alt={product.name} width={640} height={640} layout='responsive' />
         </Grid>
-        <Grid item md={3} xs={12}>
+        <Grid item xs={12} md={3}>
           <List>
             <ListItem>
               {/* varaint h1 => use created theme style defined in layout file */}
@@ -73,8 +122,10 @@ const Product = ({ product }) => {
               <StyledTypography>{product.brand}</StyledTypography>
             </ListItem>
             <ListItem>
-              Rating:
-              <StyledTypography>{`${product.rating} stars (${product.numReviews} reviews)`}</StyledTypography>
+              <Rating value={product.rating} />
+              <Link href='#reviews'>
+                <StyledTypography>({product.numReviews} reviews)</StyledTypography>
+              </Link>
             </ListItem>
             <ListItem>
               Description:
@@ -82,7 +133,7 @@ const Product = ({ product }) => {
             </ListItem>
           </List>
         </Grid>
-        <Grid item md={3} xs={12}>
+        <Grid item xs={12} md={3}>
           <Card>
             <List>
               <ListItem>
@@ -114,6 +165,7 @@ const Product = ({ product }) => {
           </Card>
         </Grid>
       </Grid>
+      <ReviewSection reviews={reviews} submit={submitHandler} loading={loading} comment={comment} setComment={setComment} rating={rating} setRating={setRating} product={product} />
     </Layout>
   )
 }

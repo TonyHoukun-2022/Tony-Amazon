@@ -52,7 +52,7 @@ const OrderHistory = () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' })
         const {
-          data: { message, orders },
+          data: { orders },
         } = await axios.get(`/api/orders/history`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         })

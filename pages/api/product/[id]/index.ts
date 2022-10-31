@@ -1,6 +1,6 @@
 import nc from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
-import Product from '../../../models/Product'
+import Product from '../../../../models/Product'
 
 const handler = nc<NextApiRequest, NextApiResponse>({attachParams: true});
 

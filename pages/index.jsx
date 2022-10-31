@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography } from '@mui/material'
+import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography, Rating } from '@mui/material'
 
 import Layout from '../components/Layout'
 import { Store } from '../utils/store'
@@ -47,6 +47,7 @@ export default function Home({ products }) {
                     <CardMedia component='img' image={product.image} title={product.name}></CardMedia>
                     <CardContent>
                       <Typography>{product.name}</Typography>
+                      <Rating value={product.rating} readOnly />
                     </CardContent>
                   </CardActionArea>
                 </NextLink>
